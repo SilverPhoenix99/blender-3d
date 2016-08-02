@@ -3,7 +3,7 @@ module Blender3d
     attr_reader :type, :name
 
     def initialize(type, name)
-      @type, @name = type, name
+      @type, @name = type, name.to_sym
     end
 
     def to_s
