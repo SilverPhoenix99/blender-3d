@@ -6,7 +6,6 @@ module Blender3d
     attr_reader :pointer_size, :size_code,
                 :endianness, :endian_code
 
-
     def initialize(file = nil)
       deserialize(file) if file
     end
@@ -35,10 +34,6 @@ module Blender3d
 
     def big_endian?
       !little_endian?
-    end
-
-    def create_reader(file)
-      ObjectReader.new(file, self)
     end
   end
 end
