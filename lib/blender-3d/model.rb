@@ -24,6 +24,12 @@ module Blender3d
       dna_block = self.dna_block
       return self unless dna_block
 
+      render_block = @blocks.find { |b| b.code == 'REND' }
+      if render_block
+        render_block.type_index = dna_block.data.structures.size
+        dna_block.data.structures << render_info
+      end
+
       @blocks.select { |block| block.type_index != 0 }.each do |block|
         block.type = dna_block.data.structures[block.type_index]
         block.parse_data(self)
@@ -41,6 +47,18 @@ module Blender3d
 
     def create_reader(file)
       ObjectReader.new(file, self)
+    end
+
+    def render_info
+      @render_info ||= begin
+        sizeof_int = dna_block.data.types.find { |name, _| name == 'int' }.last
+        struct_size = 2 * sizeof_int + 64
+        StructureDefinition.new('RenderInfo', struct_size, [
+          Field.new(SimpleType.new('int'), 'sfra'),
+          Field.new(SimpleType.new('int'), 'efra'),
+          Field.new(FixedLengthStringType.new(64), 'scene_name'),
+        ])
+      end
     end
   end
 end
