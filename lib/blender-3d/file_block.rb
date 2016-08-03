@@ -22,7 +22,7 @@ module Blender3d
       end
 
       def read
-        @file_block.code = @reader.read(4).gsub("\0", '')
+        @file_block.code = @reader.read(4).gsub(/\0.*$/, '')
         @file_block.size = @reader.read_uint32
         @file_block.pointer = Pointer.new(@reader.read_pointer)
         @file_block.type_index = @reader.read_uint32

@@ -29,7 +29,7 @@ module Blender3d
         when 'ushort'   then reader.read_uint16
         else
           dna = reader.model.dna_block.data
-          struct = dna.structures.find { |struct| struct.type == @name }
+          struct = dna.structures.find { |struct| struct.name == @name }
           return struct.read(reader) if struct
           length = dna.types.find { |name, size| name == @name }&.last
           return reader.read(length) if length
@@ -79,9 +79,9 @@ module Blender3d
   end
 
   # equivalent to PointerType<SimpleType<char>> (char*)
-  class ZeroDelimitedStringType
+  class NullTerminatedStringType
     def to_s
-      "ZeroDelimitedString"
+      "NullTerminatedString"
     end
 
     def inspect
@@ -110,7 +110,7 @@ module Blender3d
     end
 
     def read(reader)
-      reader.read(@length).gsub(/\0+$/, '')
+      reader.read(@length).gsub(/\0.*$/, '')
     end
   end
 

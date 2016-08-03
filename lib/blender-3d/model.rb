@@ -1,6 +1,10 @@
 module Blender3d
-  class ModelFile
-    attr_reader :header, :blocks
+  class Model
+    attr_reader :header, :blocks, :pointers
+    
+    def self.from_file(path)
+      File.open(path, 'rb') { |file| new(file) }
+    end
 
     def initialize(file = nil)
       @blocks = []
@@ -23,6 +27,19 @@ module Blender3d
       @blocks.select { |block| block.type_index != 0 }.each do |block|
         block.type = dna_block.data.structures[block.type_index]
         block.parse_data(self)
+      end
+
+      @pointers = {}
+      @blocks.each do |block|
+        if block.data.is_a?(Array)
+          pointer = block.pointer.location
+          block.data.each do |data|
+            @pointers[Pointer.new(pointer)] = data
+            pointer += data.class.definition.size
+          end
+        else
+          @pointers[block.pointer] = block.data
+        end
       end
 
       self

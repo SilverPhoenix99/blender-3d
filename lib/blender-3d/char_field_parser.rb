@@ -11,13 +11,13 @@ module Blender3d
 
         when GenericFieldParser::POINTER_ARRAY
           array_size = $2.to_i
-          ArrayType.new(ZeroDelimitedStringType.new, array_size)
+          ArrayType.new(NullTerminatedStringType.new, array_size)
 
         when GenericFieldParser::MULTI_POINTER
-          PointerType.new(ZeroDelimitedStringType.new)
+          PointerType.new(NullTerminatedStringType.new)
 
         when GenericFieldParser::POINTER
-          ZeroDelimitedStringType.new
+          NullTerminatedStringType.new
 
         when GenericFieldParser::MULTI_ARRAY
           array_size, string_size = $2.to_i, $3.to_i
