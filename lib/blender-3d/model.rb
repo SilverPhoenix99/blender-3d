@@ -1,7 +1,7 @@
 module Blender3d
   class Model
     attr_reader :header, :blocks, :pointers
-    
+
     def self.from_file(path)
       File.open(path, 'rb') { |file| new(file) }
     end
@@ -30,17 +30,7 @@ module Blender3d
       end
 
       @pointers = {}
-      @blocks.each do |block|
-        if block.data.is_a?(Array)
-          pointer = block.pointer.location
-          block.data.each do |data|
-            @pointers[Pointer.new(pointer)] = data
-            pointer += data.class.definition.size
-          end
-        else
-          @pointers[block.pointer] = block.data
-        end
-      end
+      @blocks.each { |block| @pointers[block.pointer] = block.data }
 
       self
     end

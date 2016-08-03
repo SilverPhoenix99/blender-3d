@@ -23,5 +23,27 @@ module Blender3d
     def ==(other)
       (self <=> other) == 0
     end
+
+    def !=(other)
+      !(self == other)
+    end
+
+    def hash
+      @location.hash
+    end
+
+    def +(other)
+      return Pointer.new(@location + other) if other.is_a?(Integer)
+      raise TypeError, "#{other.class} cannot be implicitly converted into an Integer"
+    end
+
+    def -(other)
+      return Pointer.new(@location - other) if other.is_a?(Integer)
+      return @location - other.location if other.is_a?(Pointer)
+      raise TypeError, "#{other.class} cannot be implicitly converted into a Pointer"
+    end
+
+    alias_method :eql? , :==
+    alias_method :to_i , :location
   end
 end
