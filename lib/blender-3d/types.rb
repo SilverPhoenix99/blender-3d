@@ -29,9 +29,10 @@ module Blender3d
         when 'ushort'   then reader.read_uint16
         else
           dna = reader.model.dna_block.data
-          struct = dna.structures.find { |struct| struct.name == @name }
+          name = @name[0].upcase + @name[1..-1]
+          struct = dna.structures.find { |struct| struct.name == name }
           return struct.read(reader) if struct
-          length = dna.types.find { |name, size| name == @name }&.last
+          length = dna.types.find { |name, _size| name == @name }&.last
           return reader.read(length) if length
           raise 'type not found'
       end
@@ -54,7 +55,33 @@ module Blender3d
     end
 
     def read(reader)
-      Pointer.new(reader.read_pointer)
+      pointer = Pointer.new(reader.read_pointer)
+
+      model = reader.model
+      block = model.pointers[pointer]
+      if block && block.data.is_a?(String) && !block.type
+
+        if block.count == 1
+          size = if @type.is_a?(PointerType)
+            model.header.pointer_size
+          else
+            model.dna_block.data.types.find { |type, _| type == @type.name }.last
+          end
+
+          if block.size > size && block.size % size == 0
+            block.type = ArrayType.new(@type, block.size / size)
+          else
+            block.type = @type
+          end
+
+        else
+          block.type = @type
+        end
+
+        block.parse_data(reader.model)
+      end
+
+      pointer
     end
   end
 
