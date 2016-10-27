@@ -17,7 +17,7 @@ module Blender3d
     end
 
     def <=>(other)
-      other.is_a?(Pointer) ? location <=> other.location : 1
+      other.is_a?(Pointer) || other.is_a?(Integer) ? to_i <=> other.to_i : 1
     end
 
     def ==(other)

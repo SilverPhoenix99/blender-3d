@@ -1,6 +1,6 @@
 module Blender3d
   class Model
-    attr_reader :header, :blocks, :pointers
+    attr_reader :header, :blocks, :codes, :pointers
 
     def self.from_file(path)
       File.open(path, 'rb') { |file| new(file) }
@@ -39,6 +39,8 @@ module Blender3d
       @blocks.select(&:type).each_with_index do |block, i|
         block.parse_data(self)
       end
+
+      @codes = @blocks.group_by(&:code).sort.to_h
 
       self
     end
