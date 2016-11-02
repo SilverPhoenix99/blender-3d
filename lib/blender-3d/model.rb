@@ -64,5 +64,19 @@ module Blender3d
         ])
       end
     end
+
+    def to_xml
+      content = blocks.reject { |b| b.code == 'DNA1' }.map(&:to_xml)
+      REXML::Element.new(self.class.basename).tap do |e|
+        e.add_attribute 'identifier', @header.identifier
+        e.add_attribute 'pointer_size', @header.pointer_size.to_s
+        e.add_attribute 'endianness', @header.endianness.to_s
+        e.add_attribute 'version', @header.version
+        content.each_with_index do |c, i|
+          c.add_attribute 'index', i.to_s
+          e << c
+        end
+      end
+    end
   end
 end

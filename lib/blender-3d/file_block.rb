@@ -1,5 +1,7 @@
 module Blender3d
   class FileBlock
+    include Serializer
+
     attr_accessor :code, :size, :pointer, :type_index, :count, :data, :type
 
     def initialize(reader = nil)
@@ -11,9 +13,29 @@ module Blender3d
     end
 
     def parse_data(model)
-      file = StringIO.new(self.data)
+      file = StringIO.new(data)
       reader = model.create_reader(file)
-      self.data = self.count.times.map { self.type.read(reader) }
+      self.data = count.times.map { self.type.read(reader) }
+    end
+
+    def to_xml
+      REXML::Element.new(self.class.basename).tap do |e|
+        e.add_attribute 'code', code
+        e.add_attribute 'pointer', pointer.inspect
+        e.add_attribute 'size', size.to_s
+        e.add_attribute 'type_index', type_index.to_s
+        e.add_element data_to_xml
+      end
+    end
+
+    private def data_to_xml
+      content = value_to_xml(@data)
+      return content if content.is_a?(REXML::Element)
+
+      REXML::Element.new('data').tap do |e|
+        e.add_attribute 'count', count.to_s
+        e.add_text content
+      end
     end
 
     class Reader

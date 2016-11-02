@@ -10,4 +10,5 @@ Gem::Specification.new do |s|
   s.email         = %w'silver.phoenix99@gmail.com'
   s.require_paths = %w'lib'
   s.files         = Dir['{lib/**/*.rb,*.md}']
+  s.add_dependency 'facets', '~> 3'
 end
