@@ -21,7 +21,7 @@ module Blender3d
       block = model.pointers[pointer]
       if block && block.data.is_a?(String) && !block.type
         block.type = get_type(block, model)
-        block.parse_data(reader.model)
+        block.parse_data(reader.model) unless block.type.is_a?(SimpleType) && block.type.name == 'void'
       end
 
       pointer
